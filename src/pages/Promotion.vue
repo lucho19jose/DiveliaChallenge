@@ -2,9 +2,14 @@
 import { ref } from 'vue';
 import axios from 'axios'
 import { useRouter, useRoute } from "vue-router";
+import popupComponent from '../components/popupComponent.vue';
 
 const router = useRouter();
 const route = useRoute();
+
+const showPopup = ref(false);
+const msgPopup = ref('Próximamente');
+
 
 console.log(route.params);
 
@@ -23,6 +28,35 @@ async function getComments(){
   console.log("data comments", response);
 }
 getComments()
+
+const likes = ref(0);
+async function getLikes(){
+  const response = await axios.get(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/${route.params.id}/likes/`)
+  likes.value = response.data.length
+  console.log("data likes", response);
+}
+getLikes()
+
+const like = ref(false);
+function addlike(){
+  like.value = !like.value;
+  like.value ? likes.value++ : likes.value--
+  //like.value ? showAlert() : '';
+}
+
+function reserve(){
+  showAlert();
+}
+
+const showAlert = () =>{
+  if(showPopup.value){
+    showPopup.value = false; 
+  }
+  setTimeout(()=>{
+    showPopup.value = true;
+  },100)
+}
+
 </script>
 <template>
   <div>
@@ -30,7 +64,15 @@ getComments()
         class="mx-auto mb-5"
         max-width="450"
       >
-        <v-card-title class="ml-0">{{ promotion?.title }}</v-card-title>
+        <v-card-title class="ml-0">
+            <v-icon
+              start
+              icon="mdi-arrow-left"
+              @click="router.push({ name: 'Promotions'})"
+              color="red"
+            ></v-icon>
+          {{ promotion?.title }}
+        </v-card-title>
         <v-img
           class="align-end text-white"
           height="200"
@@ -60,6 +102,7 @@ getComments()
           <v-btn
             rounded="pill"
             class="mr-4 btn"
+            @click="reserve()"
           >
             Reservar
           </v-btn>
@@ -67,9 +110,11 @@ getComments()
           <v-btn
             rounded="pill"
             class="mr-4"
-            append-icon="mdi-vuetify"
+            :class="{ 'liked': like }"
+            append-icon="mdi-heart"
+            @click="addlike()"
           >
-            16
+            {{ likes }}
           </v-btn>
       </v-card>
 
@@ -88,6 +133,7 @@ getComments()
           ></v-list-item>
         </v-list>
       </v-card>
+      <popupComponent v-if="showPopup" :text="msgPopup"></popupComponent>
   </div>
 </template>
 <style scoped>
@@ -95,5 +141,8 @@ getComments()
   background-color: #FC2016;
   width: 70%;
   color: white;
+}
+.liked {
+  color: #FC2016;
 }
 </style>
