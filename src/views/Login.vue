@@ -10,8 +10,14 @@ const form = ref(null);
 const valid = ref(true);
 
 const perfil = ref([]);
+const URLimageUploaded = ref(null);
+const showAvatar = ref(false);
 const perfilImg = [
     (value) => {
+          if(perfil.value[0]){
+            URLimageUploaded.value = URL.createObjectURL(perfil.value[0]);
+            showAvatar.value = true;
+          }
           if(!value[0]?.name){
             return 'Se requiere una foto para el perfil';
           }
@@ -22,13 +28,11 @@ const perfilImg = [
 const name = ref('');
 const nameRules = [
         v => !!v || 'El campo nombre es requerido',
-        /* v => (v && v.length <= 10) || 'Name must be less than 10 characters', */
       ]
-const email = ref('');
+const Lastname = ref('');
 
-const emailRules = [
+const LastnameRules = [
         v => !!v || 'El campo apellido es requerido',
-       /*  v =>  /.+@.+\..+/.test(v) || 'Name must be less than 10 characters', */
       ]
 
 async function validate(){
@@ -36,6 +40,7 @@ async function validate(){
 
   if (valid){
     // next
+    localStorage.setItem("login", JSON.stringify([{perfil:URL.createObjectURL(perfil.value[0]), name: name.value, lastanme: Lastname.value}]));
     router.push({ name: 'Promotions' })
   } 
 }
@@ -59,10 +64,9 @@ async function validate(){
         lazy-validation
         class="form-class"
       >
-        <div class="perfil">
-          <div class="perfil-container">
-            <div class="perfilwraper">
-              <v-file-input 
+        <v-row v-show="!showAvatar" justify="center" class="my-10">
+          <v-avatar class="avatar" size="180">
+            <v-file-input 
                 v-model="perfil"
                 class="fileinput"
                 accept="image/*"
@@ -71,9 +75,12 @@ async function validate(){
                 :rules="perfilImg"
               >
               </v-file-input>
-            </div>
-          </div>
-        </div>
+          </v-avatar>
+        </v-row>
+        <v-row v-show="showAvatar" justify="center" class="my-10">
+          <v-avatar class="avatar" :image="URLimageUploaded" size="180">
+          </v-avatar>
+        </v-row>
         <v-text-field
           v-model="name"
           :rules="nameRules"
@@ -82,8 +89,8 @@ async function validate(){
         ></v-text-field>
 
         <v-text-field
-          v-model="email"
-          :rules="emailRules"
+          v-model="Lastname"
+          :rules="LastnameRules"
           label="Apellidos"
           required
         ></v-text-field>
@@ -102,45 +109,25 @@ async function validate(){
   </div>
 </template>
 <style scoped>
-.perfil {
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.perfil-upload {
-  width: 100%;
-}
 .form-class{
   width: 100%;
 }
-/* .btn-container {
-  width: 100;
-} */
 .btn {
   background-color: #FFE81E;
   width: 90%;
 }
 
-.perfil-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  width: 200px;
-  background-color: red;
-  border-radius: 50%;
-}
-
-.perfilwraper {
-  width: 250px;
-}
-
 .fileinput {
-  height: 100px;
-  width: 150px;
+  position: absolute;
+  top: 50px;
+  left: -30px;
+  width: 200px;
+  /* height: 100px;
+  width: 150px; */
+}
+
+.avatar {
+  background-color: rgba(240, 240, 240, 1);
 }
 
 </style>
