@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios'
 import { useRouter, useRoute } from "vue-router";
 
@@ -7,12 +7,25 @@ const router = useRouter();
 const route = useRoute();
 
 const promotions = ref([]);
+const page = ref(1)
 async function getPromotions(){
-  const response = await axios.get('https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/?page=1&limit=10')
-  promotions.value = response.data.items
+  const response = await axios.get(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/?page=${page.value}&limit=10`)
+  promotions.value = promotions.value.concat(response.data.items)
   console.log("data", response.data.items);
 }
 getPromotions()
+
+onMounted(()=>{
+  const promoContainer = document.querySelector('#promotions-container');
+  console.log(promoContainer);
+  promoContainer.addEventListener('scroll', e => {
+    if(promoContainer.scrollTop + promoContainer.clientHeight+5 >= promoContainer.scrollHeight){
+      console.log("Load more...");
+      page.value++;
+      getPromotions();
+    }
+  })
+})
 
 </script>
 <template>
@@ -21,7 +34,7 @@ getPromotions()
       <span class="text-h5 font-weight-bold text-red">Todas la promociones</span>
     </p>
     <p class="my-10">últimas promociones</p>
-    <div>
+    <div id="promotions-container" class="promotions">
       <v-card
         class="mx-auto mb-5"
         max-width="400"
@@ -67,5 +80,14 @@ getPromotions()
   top: 160px;
   left: -20px;
   z-index: 100;
+}
+
+.promotions {
+  height: 800px; 
+  overflow-y:scroll;
+  /* overflow: hidden;  */
+}
+.promotions::-webkit-scrollbar {
+  display: none;
 }
 </style>

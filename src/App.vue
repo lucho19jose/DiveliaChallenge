@@ -7,9 +7,9 @@
       <v-row
         align="start"
       >
-        <v-col>
+        <v-col class="plazaimg-container">
           <div>
-            <img src="@/assets/plaza.png" alt="">
+            <img src="@/assets/plaza.png" alt="" class="plazaimg">
           </div>
         </v-col>
         <v-col>
@@ -31,7 +31,16 @@
 </template>
 
 <style scoped>
-.container {
+.plazaimg {
+  width: 100%;
+}
 
+.plazaimg-container {
+  display: none;
+}
+@media only screen and (min-width: 850px) {
+  .plazaimg-container {
+    display: block;
+  }
 }
 </style>
