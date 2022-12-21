@@ -48,7 +48,29 @@ function reserve(){
   showAlert();
 }
 
+const message = ref('');
+async function addComment(){
+  try {
+    const data = {
+      "posts": route.params.id,
+      "comments": message.value
+    }
+    const response = await axios.post(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/${route.params.id}/comments/`, data)
+    console.log(response);
+    if(response.status == 201){
+      comments.value.push(response.data)
+      console.log(comments.value);
+      message.value = '';
+    }
+  } catch (error) {/* si ocurre un error al llegar al número de registros máximos(100) */
+    console.log(error);
+    msgPopup.value = "Opps ocurrio un error"
+    showPopup.value = true; 
+  }
+}
+
 const showAlert = () =>{
+  msgPopup.value = "Próximamente"
   if(showPopup.value){
     showPopup.value = false; 
   }
@@ -132,6 +154,15 @@ const showAlert = () =>{
             :prepend-avatar="comment?.user?.avatar"
           ></v-list-item>
         </v-list>
+        <div class="ml-5">
+          <v-text-field
+              placeholder="Escribe un comentario..."
+              variant="plain"
+              v-model="message"
+              :append-icon="message ? 'mdi-send' : ''"
+              @click:append="addComment"
+            ></v-text-field>
+        </div>
       </v-card>
       <popupComponent v-if="showPopup" :text="msgPopup"></popupComponent>
   </div>
