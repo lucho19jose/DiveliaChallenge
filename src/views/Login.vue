@@ -123,8 +123,6 @@ async function validate(){
   top: 50px;
   left: -30px;
   width: 200px;
-  /* height: 100px;
-  width: 150px; */
 }
 
 .avatar {
