@@ -115,6 +115,7 @@ async function validate(){
 .btn {
   background-color: #FFE81E;
   width: 90%;
+  color: #FC2016;
 }
 
 .fileinput {

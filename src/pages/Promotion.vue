@@ -4,6 +4,8 @@ import axios from 'axios'
 import { useRouter, useRoute } from "vue-router";
 import popupComponent from '../components/popupComponent.vue';
 
+const BASEURL = 'https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts';
+
 const router = useRouter();
 const route = useRoute();
 
@@ -15,7 +17,7 @@ console.log(route.params);
 
 const promotion = ref(null);
 async function getPromotion(){
-  const response = await axios.get(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/${route.params.id}/`)
+  const response = await axios.get(`${BASEURL}/${route.params.id}/`)
   promotion.value = response.data
   console.log("data", response);
 }
@@ -23,7 +25,7 @@ getPromotion()
 
 const comments = ref([]);
 async function getComments(){
-  const response = await axios.get(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/${route.params.id}/comments/`)
+  const response = await axios.get(`${BASEURL}/${route.params.id}/comments/`)
   comments.value = response.data
   console.log("data comments", response);
 }
@@ -31,7 +33,7 @@ getComments()
 
 const likes = ref(0);
 async function getLikes(){
-  const response = await axios.get(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/${route.params.id}/likes/`)
+  const response = await axios.get(`${BASEURL}/${route.params.id}/likes/`)
   likes.value = response.data.length
   console.log("data likes", response);
 }
@@ -41,11 +43,10 @@ const like = ref(false);
 function addlike(){
   like.value = !like.value;
   like.value ? likes.value++ : likes.value--
-  //like.value ? showAlert() : '';
 }
 
 function reserve(){
-  showAlert();
+  showAlert("Próximamente");
 }
 
 const message = ref('');
@@ -55,7 +56,7 @@ async function addComment(){
       "posts": route.params.id,
       "comments": message.value
     }
-    const response = await axios.post(`https://61c35faa9cfb8f0017a3eb2e.mockapi.io/api/v1/posts/${route.params.id}/comments/`, data)
+    const response = await axios.post(`${BASEURL}/${route.params.id}/comments/`, data)
     console.log(response);
     if(response.status == 201){
       comments.value.push(response.data)
@@ -64,13 +65,12 @@ async function addComment(){
     }
   } catch (error) {/* si ocurre un error al llegar al número de registros máximos(100) */
     console.log(error);
-    msgPopup.value = "Opps ocurrio un error"
-    showPopup.value = true; 
+    showAlert("Oops ocurrio un error, al agregar el comentario")
   }
 }
 
-const showAlert = () =>{
-  msgPopup.value = "Próximamente"
+const showAlert = (msg) =>{
+  msgPopup.value = msg;
   if(showPopup.value){
     showPopup.value = false; 
   }
@@ -86,7 +86,7 @@ const showAlert = () =>{
         class="mx-auto mb-5"
         max-width="450"
       >
-        <v-card-title class="ml-0">
+        <v-card-title class="ml-0 card-title">
             <v-icon
               start
               icon="mdi-arrow-left"
@@ -174,6 +174,9 @@ const showAlert = () =>{
   color: white;
 }
 .liked {
+  color: #FC2016;
+}
+.card-title {
   color: #FC2016;
 }
 </style>
